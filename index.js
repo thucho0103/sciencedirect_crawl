@@ -14,21 +14,32 @@ app.get('/', function (req, res) {
 
             let arr = []
             result.forEach(element => {
+                console.log(element.link);
                 element.link.forEach(ele => {
-                    arr.push(ele['@href'])
+
+                    if(ele['@href'].includes('sciencedirect')){
+                        console.log(ele['@href']);
+
+                        arr.push(ele['@href'])
+                    }
+
                 });
                 // element.description = "element " + element['prism:publicationName']
             });
 
-            let arrResult = arr.filter(link => link.includes('sciencedirect'))
+            console.log(arr);
+
+            // const arrResult = arr.filter((link)=>{
+            //     return link.includes('sciencedirect')
+            // })
 
             // console.log(result);
 
             (async () => {
                 const browser = await puppeteer.launch({ headless: false });
 
-                for (let index = 0; index < arrResult.length; index++) {
-                    const nameUrl = arrResult[index];
+                for (let index = 0; index < arr.length; index++) {
+                    const nameUrl = arr[index];
     
                     // const fullUrl = `${url}${nameUrl}`
                     // console.log(nameUrl)
