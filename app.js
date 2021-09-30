@@ -1,45 +1,38 @@
-const puppeteer = require('puppeteer');
 
-(async () => {
-  const browser = await puppeteer.launch({ headless: false });
+const download = require('download');
+
+// Url of the image
+const file = 'https://www.ijrra.net/April2018/ConsComp2018_106.pdf';
+// Path at which image will get downloaded
+const filePath = `${__dirname}/files`;
   
-  const page = await browser.newPage()
-//   await page.goto('https://www.sciencedirect.com/science/article/pii/S2667096820300021',{ waitUntil: 'load' })
+const axios = require('axios')
 
-  await page.goto('https://www.sciencedirect.com/science/article/pii/S2667096820300021', {'waitUntil':'load'});
-//   await waitTillHTMLRendered(page)
-  // await page.waitForTimeout(5000)
-  await page.waitForSelector('#body')
-    // await page.waitForSelector('#body',()=>{
-    //   console.log("abcd");
-    // })
-  const result = await page.evaluate(()=>{
-    return document.querySelector('#body').innerText
-  })
+axios.get('https://serpapi.com/search.json?engine=google_scholar&q=artificial%20intelligence%20marketing&api_key=cd2ed7fbeb7dfda6828ddc511a3fde17b30bafcea6d3d673e136d5bf0583cde9&num=20')
+.then((response) => {
+    // console.log(response.data.organic_results);
+    response.data.organic_results.forEach(element => {
+      try {
+        if(element.resources != null){
 
-  console.log(result);
+          // console.log(typeof(element.resources[0].file_format)); 
 
-  await browser.close()
-})();
+          if(element.resources[0].file_format == "PDF"){
+            
+            let link = element.resources[0].link
 
-
-
-// const cheerio = require('cheerio'),
-//     axios = require('axios'),
-//     url = `https://api.elsevier.com/content/search/sciencedirect?start=0&count=100&query=artificial+intelligence+marketing&apiKey=7f59af901d2d86f78a1fd60c1bf9426a&httpAccept=application%2Fjson`;
-
-// axios.get(url)
-//     .then((response) => {
-//         let $ = cheerio.load(response.data);
-//         // console.log($.text());    
-
-//         $('table > td').each(function (i, e) {   
-//           console.log(e);           
-//         })
-//     })
-//     .catch(function (e) {
-//         console.log(e);
-//     });
-
-//     'yexewe4638@tinilalo.com'
-//     'T"ytiUq?#84BRU7'
+            download(link,filePath)
+            .then(() => {
+                console.log('Download Completed');
+            })
+          }
+        }
+      } catch (error) {
+        
+      }
+    });
+})
+.catch(function (e) {
+    console.log("error " + e.message);
+    res.render('index', { data: [] });
+});

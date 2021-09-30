@@ -8,73 +8,16 @@ app.set('views', './views');
 
 app.get('/', function (req, res) {
 
-    axios.get('https://api.elsevier.com/content/search/sciencedirect?start=0&count=2&query=artificial%20intelligence%20marketing+and+openaccess%281%29&apiKey=7f59af901d2d86f78a1fd60c1bf9426a&httpAccept=application%2Fjson')
-        .then((response) => {
-            const result = response.data['search-results'].entry
-
-            let arr = []
-            result.forEach(element => {
-                console.log(element.link);
-                element.link.forEach(ele => {
-
-                    if(ele['@href'].includes('sciencedirect')){
-                        console.log(ele['@href']);
-
-                        arr.push(ele['@href'])
-                    }
-
-                });
-                // element.description = "element " + element['prism:publicationName']
-            });
-
-            console.log(arr);
-
-            // const arrResult = arr.filter((link)=>{
-            //     return link.includes('sciencedirect')
-            // })
-
-            // console.log(result);
-
-            (async () => {
-                const browser = await puppeteer.launch({ headless: false });
-
-                for (let index = 0; index < arr.length; index++) {
-                    const nameUrl = arr[index];
-    
-                    // const fullUrl = `${url}${nameUrl}`
-                    // console.log(nameUrl)
-                    const page = await browser.newPage()
-                    await page.goto(nameUrl, { waitUntil: 'load',timeout: 50000 })
-                    try {
-                        await page.waitForSelector('#body')
-                        const pageData = await page.evaluate(() => {
-                            // console.log(document.querySelector('#body').innerText);
-                            let string = document.querySelector('#body').innerText
-                            return string
-                        })
-                        // console.log('\t Data from page: ', pageData)
-
-                        result[index].description = pageData
-                    } catch (error) {
-                        // console.log("close");
-                        result[index].description = "error"
-                    }
-                    // data[fullUrl] = pageData
-                    await page.close()
-
-                }
-                await browser.close()
-
-                await res.render('index', { data: result });
-            })();  
-            // console.log(arrResult);
+    // axios.get('https://api.elsevier.com/content/search/sciencedirect?start=0&count=2&query=artificial%20intelligence%20marketing+and+openaccess%281%29&apiKey=7f59af901d2d86f78a1fd60c1bf9426a&httpAccept=application%2Fjson')
+    //     .then((response) => {
             
-        })
-        .catch(function (e) {
-            console.log("error " + e.message);
-            res.render('index', { data: [] });
-        });
+    //     })
+    //     .catch(function (e) {
+    //         console.log("error " + e.message);
+    //         res.render('index', { data: [] });
+    //     });
 
+    
 });
 
 app.listen(3000, () => {
