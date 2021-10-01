@@ -3,16 +3,18 @@ const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 const download = require('download');
 
-const filePath = `${__dirname}/files`;
+const filePath = `${__dirname}/sciencedirect`;
 
 const count = 100
 
 axios.get(`https://api.elsevier.com/content/search/sciencedirect?start=0&count=${count}&query=artificial%20intelligence%20marketing+and+openaccess%281%29&apiKey=7f59af901d2d86f78a1fd60c1bf9426a&httpAccept=application%2Fjson`)
 .then((response) => {
 
-    const result = response.data['search-results'].entry
+    const array = response.data['search-results'].entry
 
-    result.forEach(element => {
+    for (let index = 0; index < array.length; index++) {
+        const element = array[index];
+        
         console.log(element['prism:doi']);
 
         axios.get(`https://sci-hub.se/${element['prism:doi']}`)
@@ -29,14 +31,10 @@ axios.get(`https://api.elsevier.com/content/search/sciencedirect?start=0&count=$
         })
         .catch(function (e) {
             console.log("error " + e.message);
-            res.render('index', { data: [] });
         });
-        
-    });
-
+    }
 })
 .catch(function (e) {
     console.log("error " + e.message);
-    res.render('index', { data: [] });
 });
 
